@@ -1,0 +1,63 @@
+#! /usr/bin/env python
+# Script for gimp to crop/resize a picture to 10x15cm either with white stripes or cropping
+# coding: utf-8
+
+from gimpfu import *
+
+def two_third_fill_stripes(img):
+    pdb.gimp_image_undo_group_start(img)
+    if img.width > img.height:
+        width = img.height*3/2
+        offsetX = (img.width-width)/2
+        pdb.gimp_image_resize(img,width,img.height,-offsetX,0)
+    else:
+        height = img.width*3/2
+        offsetY = (img.height-height)/2
+        pdb.gimp_image_resize(img,img.width,height,0,-offsetY)
+    pdb.gimp_image_undo_group_end(img)
+	
+
+register("two-third-fill-stripes",
+    "Set canvas to 2/3 (10x15) (with stripes)",
+    "Ajuste le canvas à 2/3 selon l'orientation de l'image et remplis en transparence si besoin",
+    "Robby", "Public domain", "2019",
+    N_("Ajuste le canvas à 2/3 (bandes si besoin)"),
+    "*",
+    [(PF_IMAGE, "image",       "Input image", None), ], [],
+    two_third_fill_stripes,  menu="<Image>/Image",
+    )
+
+def two_third_fill_no_stripes(img):
+    pdb.gimp_image_undo_group_start(img)
+    if img.width > img.height:
+        width = img.height*3/2
+        if img.width < width:
+            height = img.width*2/3
+            offsetY = (img.height-height)/2
+            pdb.gimp_image_resize(img,img.width,height,0,-offsetY)
+        else:
+            offsetX = (img.width-width)/2
+            pdb.gimp_image_resize(img,width,img.height,-offsetX,0)
+    else:
+        height = img.width*3/2
+        if img.height < height:
+            width = img.height*2/3
+            offsetX = (img.width-width)/2
+            pdb.gimp_image_resize(img,width,img.height,-offsetX,0)
+        else:
+            offsetY = (img.height-height)/2
+            pdb.gimp_image_resize(img,img.width,height,0,-offsetY)
+    pdb.gimp_image_undo_group_end(img)
+	
+
+register("two-third-fill-no-stripes",
+    "Set canvas to 2/3 (10x15) (no stripes)",
+    "Ajuste le canvas à 2/3 selon l'orientation de l'image en optimisant pour ne pas avoir d'espace vide",
+    "Robby", "Public domain", "2019",
+    N_("Ajuste le canvas à 2/3 sans bandes"),
+    "*",
+    [(PF_IMAGE, "image",       "Input image", None), ], [],
+    two_third_fill_no_stripes,  menu="<Image>/Image",
+    )
+
+main()
